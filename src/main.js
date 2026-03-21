@@ -22,6 +22,7 @@ let page = 1;
 
 //Додавання наступних сторінок
 async function handleClick() {
+  hideLoadMoreButton();
   showLoader();
 
   try {
@@ -31,23 +32,24 @@ async function handleClick() {
     createGallery(data.hits);
 
     //Скролл
-    const { height: cardHeight } = document
-      .querySelector('.gallery-item')
-      .getBoundingClientRect();
-
-    window.scrollBy({
-      top: cardHeight * 2,
-      behavior: 'smooth',
-    });
+    const card = document.querySelector('.gallery-item');
+    if (card) {
+      const { height: cardHeight } = card.getBoundingClientRect();
+      window.scrollBy({
+        top: cardHeight * 2,
+        behavior: 'smooth',
+      });
+    }
 
     const totalLoaded = document.querySelectorAll('.gallery-item').length;
 
     if (totalLoaded >= data.totalHits) {
-      hideLoadMoreButton();
       iziToast.info({
         message: "We're sorry, but you've reached the end of search results.",
         position: 'topRight',
       });
+    } else {
+      showLoadMoreButton();
     }
   } catch (error) {
     iziToast.error({
@@ -100,6 +102,10 @@ async function handleSubmit(event) {
       showLoadMoreButton();
     } else {
       hideLoadMoreButton();
+      iziToast.info({
+        message: "We're sorry, but you've reached the end of search results.",
+        position: 'topRight',
+      });
     }
   } catch (error) {
     iziToast.error({
